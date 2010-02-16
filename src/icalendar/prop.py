@@ -43,7 +43,7 @@ them directly.
 
 # from python >= 2.3
 from datetime import datetime, timedelta, time, date, tzinfo
-from types import IntType, StringType, UnicodeType, TupleType, ListType
+from types import TupleType, ListType
 SequenceTypes = [TupleType, ListType]
 import re
 import time as _time
@@ -133,8 +133,10 @@ class vBoolean(int):
     True
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vBoolean, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def ical(self):
         if self:
@@ -171,8 +173,10 @@ class vCalAddress(str):
     'MAILTO:maxm@mxm.dk'
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vCalAddress, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def __repr__(self):
         return u"vCalAddress(%s)" % str.__repr__(self)
@@ -305,7 +309,6 @@ class vDatetime:
 
     def ical(self):
         if self.dt.tzinfo:
-            offset = self.dt.tzinfo.utcoffset(datetime.now())
             utc_time = self.dt - self.dt.tzinfo.utcoffset(datetime.now())
             return utc_time.strftime("%Y%m%dT%H%M%SZ")
         return self.dt.strftime("%Y%m%dT%H%M%S")
@@ -496,8 +499,10 @@ class vFloat(float):
     '42.0'
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vFloat, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def ical(self):
         return str(self)
@@ -526,8 +531,10 @@ class vInt(int):
     ValueError: Expected int, got: 1s3
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vInt, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def ical(self):
         return str(self)
@@ -593,7 +600,7 @@ class vDDDTypes:
         elif isinstance(dt, timedelta):
             return vDuration(dt).ical()
         else:
-            raise ValueEror ('Unknown date type')
+            raise ValueError('Unknown date type')
 
     def from_ical(ical):
         "Parses the data format from ical text format"
@@ -833,7 +840,8 @@ class vWeekday(str):
     week_days = CaselessDict({"SU":0, "MO":1, "TU":2, "WE":3,
                               "TH":4, "FR":5, "SA":6})
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vWeekday, cls).__new__(cls, *args, **kwargs)
         match = WEEKDAY_RULE.match(self)
         if match is None:
             raise ValueError, 'Expected weekday abbrevation, got: %s' % self
@@ -845,6 +853,7 @@ class vWeekday(str):
             raise ValueError, 'Expected weekday abbrevation, got: %s' % self
         self.relative = relative and int(relative) or None
         self.params = Parameters()
+        return self
 
     def ical(self):
         return self.upper()
@@ -885,10 +894,12 @@ class vFrequency(str):
         "YEARLY":"YEARLY",
     })
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vFrequency, cls).__new__(cls, *args, **kwargs)
         if not self in vFrequency.frequencies:
             raise ValueError, 'Expected frequency, got: %s' % self
         self.params = Parameters()
+        return self
 
     def ical(self):
         return self.upper()
@@ -1064,8 +1075,10 @@ class vText(unicode):
 
     encoding = 'utf-8'
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vText, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def escape(self):
         """
@@ -1122,8 +1135,10 @@ class vTime(time):
     ValueError: Expected time, got: 263000
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vTime, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def ical(self):
         return self.strftime("%H%M%S")
@@ -1152,8 +1167,10 @@ class vUri(str):
     'http://www.example.com/'
     """
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        self = super(vUri, cls).__new__(cls, *args, **kwargs)
         self.params = Parameters()
+        return self
 
     def ical(self):
         return str(self)
