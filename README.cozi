@@ -1,0 +1,4 @@
+How to create the tarball that we put into .../kits/ext/pypi:
+
+c=$(git rev-parse --short HEAD)
+git archive --prefix cozi-icalendar-$c/ $c | gzip > .../kits/ext/pypi/iCalendar-$c.tar.gz
